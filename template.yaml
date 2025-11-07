@@ -106,7 +106,7 @@ spec:
       action: shell:run
       input:
         cwd: ${{ steps.clone.output.path }}
-        command: docker-compose 
+        command: docker-compose
         args: ["-f", "${{ parameters.extraFields.Dockerfile }}", "up", "--build"]
         # args: ["build", "-f", "${{ parameters.extraFields.Dockerfile }}", "-t", "my-image:latest", "."]
 

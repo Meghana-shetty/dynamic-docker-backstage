@@ -99,6 +99,57 @@ spec:
         url: ${{ parameters.Github_URL }}
         targetPath: .
 
+    - id: remove_existing
+      name: Remove existing container on port 90
+      action: shell:run
+      input:
+        command: bash
+        args:
+          - -c
+          - |
+            echo "Checking for existing containers using port 90..."
+            CONTAINER_ID=$(docker ps --filter "publish=90" --format "{{.ID}}")
+            if [ -n "$CONTAINER_ID" ]; then
+              echo "Stopping and removing container: $CONTAINER_ID"
+              docker stop $CONTAINER_ID && docker rm $CONTAINER_ID
+            else
+              echo "No container running on port 90"
+            fi
+
+    # Step 3: Create override file for port mapping
+    - id: override_ports
+      name: Create port override file
+      action: shell:run
+      input:
+        command: bash
+        args:
+          - -c
+          - |
+            echo "Creating temporary docker-compose.override.yml with port mapping..."
+            cat > docker-compose.override.yml <<EOF
+            version: '3'
+            services:
+              web:
+                ports:
+                  - "90:${{ parameters.AppPort }}"
+            EOF
+
+    # Step 4: Build and run the container
+    - id: build_docker
+      name: Build and run docker containers
+      action: shell:run
+      input:
+        command: docker-compose
+        args:
+          - "-f"
+          - "${{ parameters.Dockerfile }}"
+          - "-f"
+          - "docker-compose.override.yml"
+          - "up"
+          - "--build"
+          - "-d"
+
+
 
     - id: build_docker
       name: Build Docker Image

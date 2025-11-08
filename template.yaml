@@ -128,13 +128,15 @@ spec:
       action: shell:run
       input:
         cwd: ${{ steps.fetch-template.output.path }}
-        command: bash
-        args:
-          - -c
-          - |
-            echo "Running in $(pwd)"
-            docker ps || echo "⚠️ Docker daemon not reachable!"
-            docker compose up --build
+        command: docker
+        args: ["compose", "up", "--build", "--no-color"]
+        # command: bash
+        # args:
+        #   - -c
+        #   - |
+        #     echo "Running in $(pwd)"
+        #     docker ps || echo "⚠️ Docker daemon not reachable!"
+        #     docker compose up --build
 
 
 

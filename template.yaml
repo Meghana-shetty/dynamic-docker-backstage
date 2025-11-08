@@ -161,6 +161,22 @@ spec:
     #       - "-d"
 
 
+    - id: debug
+      name: Check workspace contents
+      action: shell:run
+      input:
+        cwd: ${{ steps.clone.output.path }}
+        command: bash
+        args:
+          - -c
+          - |
+            echo "Current directory: $(pwd)"
+            echo "Files present:"
+            ls -la
+            echo "Checking if docker-compose.yml exists..."
+            test -f docker-compose.yml && echo "✅ Found docker-compose.yml" || echo "❌ Not found"
+    
+
 
     - id: build_docker
       name: Build Docker Image

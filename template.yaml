@@ -128,8 +128,13 @@ spec:
       action: shell:run
       input:
         cwd: ${{ steps.fetch-template.output.path }}
-        command: docker
-        args: ["compose", "up", "--build", "--no-color"]
+        command: bash
+        args:
+          - -c
+          - |
+            DOCKER_HOST=unix:///var/run/docker.sock docker compose up --build
+        # command: docker
+        # args: ["compose", "up", "--build", "--no-color"]
         # command: bash
         # args:
         #   - -c

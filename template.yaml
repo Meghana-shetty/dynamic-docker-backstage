@@ -91,6 +91,16 @@ spec:
                   properties: {}
           
   steps:
+    # - id: fetch-template
+    #   name: Fetch template files
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: fetch:plain
+    #   input:
+    #     url: ${{ parameters.Github_URL }}
+    #     targetPath: .
+
+
+
     - id: fetch-template
       name: Fetch template files
       if: ${{ parameters.stack == 'Docker' }}
@@ -98,6 +108,19 @@ spec:
       input:
         url: ${{ parameters.Github_URL }}
         targetPath: .
+    
+    - id: build_docker
+      name: Build Docker Image
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        cwd: ${{ steps.fetch-template.output.path }}
+        command: docker
+        args: ["compose", "up", "--build", "-d"]
+
+
+
+        
 
     - id: remove_existing
       name: Remove existing container on port 90

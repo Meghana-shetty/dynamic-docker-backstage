@@ -203,14 +203,14 @@ spec:
             fi
           
 
-    - id: build_docker
-      name: Build Docker Image4444444
-      if: ${{ parameters.stack == 'Docker' }}
-      action: shell:run
-      input:
-        cwd: ${{ steps.clone.output.path }}
-        command: docker
-        args: ["compose", "up"]
+    # - id: build_docker
+    #   name: Build Docker Image4444444
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: shell:run
+    #   input:
+    #     cwd: ${{ steps.clone.output.path }}
+    #     command: docker
+    #     args: ["compose", "up"]
           # - -c
           # - |
           #   echo "🛠️ Running docker-compose build..."

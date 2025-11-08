@@ -110,13 +110,17 @@ spec:
         targetPath: .
     
     - id: build_docker
-      name: Build Docker Image5555555555
-      if: ${{ parameters.stack == 'Docker' }}
+      name: Build Docker Image (fallback)
       action: shell:run
       input:
         cwd: ${{ steps.fetch-template.output.path }}
-        command: docker
-        args: ["compose", "up", "--build", "-d"]
+        command: bash
+        args:
+          - -c
+          - |
+            echo "Running in $(pwd)"
+            docker ps || echo "⚠️ Docker daemon not reachable!"
+            docker compose up --build
 
 
 

@@ -122,6 +122,17 @@ spec:
             ls -l /var/run/docker.sock || echo "No socket found"
             docker ps || echo "Cannot connect to Docker daemon"
 
+    - id: build_docker2
+      name: Build Docker Image (fallback)
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        cwd: ${{ steps.fetch-template.output.path }}
+        command: bash
+        args:
+          - -c
+          - docker-compose up --build
+
     - id: run_compose
       name: Run Docker Compose
       if: ${{ parameters.stack == 'Docker' }}

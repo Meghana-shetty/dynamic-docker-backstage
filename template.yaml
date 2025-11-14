@@ -103,6 +103,26 @@ spec:
         cwd: .
   
     # Deploy using docker-compose action: fetch:plain
+
+    - id: check-docker-config
+      name: Check Docker Compose Config
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        cwd: ./repo
+        command: docker-compose
+        args: ["-f", "docker-compose.yml", "config"]
+    
+    - id: deploy-docker
+      name: Deploy Docker Compose
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        cwd: ./repo
+        command: docker-compose
+        args: ["-f", "docker-compose.yml", "up", "--build", "-d"]
+
+    
     - id: deploy-docker
       name: Deploy Docker Compose
       if: ${{ parameters.stack == 'Docker' }}

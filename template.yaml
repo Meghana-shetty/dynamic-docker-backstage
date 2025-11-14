@@ -116,7 +116,7 @@ spec:
       input:
         cwd: ${{ steps.fetch-repo.output.path }}
         command: docker-compose
-        args: ["-f", "${{ parameters.Dockerfile }}", "config"]
+        args: ["-f", "docker-compose.yml", "config"]
   
     # Step 3: Deploy docker-compose (detached)
     - id: deploy-compose
@@ -125,7 +125,7 @@ spec:
       input:
         cwd: ${{ steps.fetch-repo.output.path }}
         command: docker-compose
-        args: ["-f", "${{ parameters.Dockerfile }}", "up", "--build", "-d"]
+        args: ["-f", "docker-compose.yml", "up", "--build", "-d"]
   
     # Step 4: Show running containers (optional)
     - id: show-containers

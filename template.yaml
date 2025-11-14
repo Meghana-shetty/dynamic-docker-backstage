@@ -116,6 +116,20 @@ spec:
       input:
         url: ${{ parameters.Github_URL }}
         targetPath: ./repo  # clone repo into ./repo
+
+    - id: fetch-repo
+      name: Clone GitHub repository
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        command: bash
+        args:
+          - -c
+          - |
+            echo "Cloning repository..."
+            git clone "${{ parameters.Github_URL }}" repo
+            echo "Repo cloned:"
+            ls -la repo
     
     - id: debug_files
       name: Debug file listing

@@ -117,8 +117,8 @@ spec:
         url: ${{ parameters.Github_URL }}
         targetPath: ./repo  # clone repo into ./repo
 
-    - id: fetch-repo
-      name: Clone GitHub repository
+    - id: fetch-repo2222
+      name: Clone GitHub repository2222
       if: ${{ parameters.stack == 'Docker' }}
       action: shell:run
       input:
@@ -145,8 +145,8 @@ spec:
             echo "Listing files:"
             ls -la
     
-    - id: build_docker_compose
-      name: Build & Run Docker Compose
+    - id: build_docker_compose2222
+      name: Build & Run Docker Compose2222
       if: ${{ parameters.stack == 'Docker' }}
       action: shell:run
       input:

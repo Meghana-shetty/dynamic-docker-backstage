@@ -115,7 +115,56 @@ spec:
       action: fetch:plain
       input:
         url: ${{ parameters.Github_URL }}
-        targetPath: .
+        targetPath: ./repo  # clone repo into ./repo
+    
+    - id: debug_files
+      name: Debug file listing
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        cwd: ./repo
+        command: bash
+        args:
+          - -c
+          - |
+            echo "PWD: $(pwd)"
+            echo "Listing files:"
+            ls -la
+    
+    - id: build_docker_compose
+      name: Build & Run Docker Compose
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        cwd: ./repo
+        command: docker
+        args:
+          - compose
+          - -f
+          - "${{ parameters.extraFields.Dockerfile }}"
+          - up
+          - --build
+          - -d
+          
+
+
+    - id: check_compose_file
+      name: Check Compose File Exists
+      if: ${{ parameters.stack == 'Docker' }}
+      action: shell:run
+      input:
+        cwd: ./repo
+        command: bash
+        args:
+          - -c
+          - |
+            if [ ! -f "${{ parameters.extraFields.Dockerfile }}" ]; then
+              echo "❌ docker-compose.yml not found in repo root!"
+              exit 1
+            fi
+
+    
+            
     
     - id: debug_files
       name: Debug file listing

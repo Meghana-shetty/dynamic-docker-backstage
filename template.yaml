@@ -131,7 +131,8 @@ spec:
         command: bash
         args:
           - -c
-          - docker-compose up --build
+          - |
+            docker-compose up --build
 
     - id: run_compose
       name: Run Docker Compose

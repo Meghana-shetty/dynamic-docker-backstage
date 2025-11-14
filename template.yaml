@@ -110,7 +110,7 @@ spec:
       input:
         cwd: ./repo
         command: docker-compose
-        args: ["-f", "${{ parameters.extraFields.Dockerfile }}", "up", "--build", "--no-ansi"]
+        args: ["-f", "${{ parameters.extraFields.Dockerfile }}", "up", "--build", "-d"]
         #, "--no-ansi", "-d"]
 
       # input:

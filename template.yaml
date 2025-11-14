@@ -108,7 +108,7 @@ spec:
       input:
         url: ${{ parameters.Github_URL }}
         targetPath: .
-        cloneDirName: false 
+        #cloneDirName: false 
 
     - id: debug_files
       name: Debug file listing

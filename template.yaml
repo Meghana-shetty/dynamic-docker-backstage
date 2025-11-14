@@ -100,8 +100,11 @@ spec:
         args:
           - "-c"
           - |
-            mkdir -p /opt/user-repos/${{ parameters.DeploymentName }}
-            git clone "${{ parameters.Github_URL }}" "/opt/user-repos/${{ parameters.DeploymentName }}"
+            CLEAN_URL=$(echo "${{ parameters.Github_URL }}" | tr -d '\n' | tr -d '\r' | xargs)
+            mkdir -p "/opt/user-repos/new_folder"
+            git clone "$CLEAN_URL" "/opt/user-repos/new_folder"
+            # mkdir -p /opt/user-repos/${{ parameters.DeploymentName }}
+            # git clone "${{ parameters.Github_URL }}" "/opt/user-repos/${{ parameters.DeploymentName }}"
   
     # Step 2: Validate docker-compose.yml exists
     - id: validate-compose

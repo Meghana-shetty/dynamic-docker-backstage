@@ -137,10 +137,13 @@ spec:
       input:
         command: sh
         args:
-          - "-c"
-          - |
-            cd "/home/msis/projects/"
-            docker-compose up -d || (echo "❌ Deployment failed"; docker-compose logs)
+          command: git
+          args: ["clone", "${{ parameters.Github_URL }}", "repo"]
+          cwd: /home/msis/projects/
+          # - "-c"
+          # - |
+          #   cd "/home/msis/projects/"
+          #   docker-compose up -d || (echo "❌ Deployment failed"; docker-compose logs)
   
     # Step 4: List running containers
     - id: show-containers

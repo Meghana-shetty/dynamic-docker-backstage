@@ -379,22 +379,22 @@ spec:
     
 
 
-    - id: run_compose
-      name: Run Docker Compose
-      if: ${{ parameters.stack == 'Docker' }}
-      action: shell:run
-      input:
-        cwd: ${{ steps.fetch-template.output.path }}
-        command: bash
-        args:
-          - -c
-          - |
-            echo "🐳 Current dir: $(pwd)"
-            echo "📂 Listing files before running compose:"
-            ls -la
-            echo "⚙️ Starting docker compose up..."
-            DOCKER_HOST=unix:///var/run/docker.sock docker compose -f docker-compose.yml up -d --build --force-recreate --remove-orphans
-            echo "✅ Docker compose finished with exit code $?"
+    # - id: run_compose
+    #   name: Run Docker Compose
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: shell:run
+    #   input:
+    #     cwd: ${{ steps.fetch-template.output.path }}
+    #     command: bash
+    #     args:
+    #       - -c
+    #       - |
+    #         echo "🐳 Current dir: $(pwd)"
+    #         echo "📂 Listing files before running compose:"
+    #         ls -la
+    #         echo "⚙️ Starting docker compose up..."
+    #         DOCKER_HOST=unix:///var/run/docker.sock docker compose -f docker-compose.yml up -d --build --force-recreate --remove-orphans
+    #         echo "✅ Docker compose finished with exit code $?"
             # echo "🐳 Current dir: $(pwd)"
             # echo "📂 Listing files before running compose:"
             # ls -la
@@ -403,24 +403,25 @@ spec:
             # echo "✅ Docker compose finished with exit code $?"
 
 
-        
-    
-    - id: build_docker
-      name: Build Docker Image (fallback)
-      if: ${{ parameters.stack == 'Docker' }}
-      action: shell:run
-      input:
-        cwd: ${{ steps.fetch-template.output.path }}
-        command: bash
-        args:
-          - -c
-          - |
-            echo "🐳 Current dir: $(pwd)"
-            echo "📂 Listing files:"
-            ls -la
-            echo "⚙️ Starting docker compose build..."
-            DOCKER_HOST=unix:///var/run/docker.sock docker compose up --build 2>&1
-            echo "✅ Compose command finished (exit code $?)"
+     
+    # - id: build_docker
+    #   name: Build Docker Image (fallback)
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: shell:run
+    #   input:
+    #     cwd: ${{ steps.fetch-template.output.path }}
+    #     command: bash
+    #     args:
+    #       - -c
+    #       - |
+    #         echo "🐳 Current dir: $(pwd)"
+    #         echo "📂 Listing files:"
+    #         ls -la
+    #         echo "⚙️ Starting docker compose build..."
+    #         DOCKER_HOST=unix:///var/run/docker.sock docker compose up --build 2>&1
+    #         echo "✅ Compose command finished (exit code $?)"
+
+    ###################################################################################################################################################################
         # cwd: ${{ steps.fetch-template.output.path }}
         # command: bash
         # args:
@@ -439,45 +440,45 @@ spec:
 
 
 
-        
+    #####################################################################################################################11-14-2025######################################    
 
-    - id: remove_existing
-      name: Remove existing container on port 90
-      if: ${{ parameters.stack == 'Docker' }}
-      action: shell:run
-      input:
-        command: bash
-        args:
-          - -c
-          - |
-            echo "Checking for existing containers using port 90..."
-            CONTAINER_ID=$(docker ps --filter "publish=90" --format "{{.ID}}")
-            if [ -n "$CONTAINER_ID" ]; then
-              echo "Stopping and removing container: $CONTAINER_ID"
-              docker stop $CONTAINER_ID && docker rm $CONTAINER_ID
-            else
-              echo "No container running on port 90"
-            fi
+    # - id: remove_existing
+    #   name: Remove existing container on port 90
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: shell:run
+    #   input:
+    #     command: bash
+    #     args:
+    #       - -c
+    #       - |
+    #         echo "Checking for existing containers using port 90..."
+    #         CONTAINER_ID=$(docker ps --filter "publish=90" --format "{{.ID}}")
+    #         if [ -n "$CONTAINER_ID" ]; then
+    #           echo "Stopping and removing container: $CONTAINER_ID"
+    #           docker stop $CONTAINER_ID && docker rm $CONTAINER_ID
+    #         else
+    #           echo "No container running on port 90"
+    #         fi
 
-    # Step 3: Create override file for port mapping
-    - id: override_ports
-      name: Create port override file
-      if: ${{ parameters.stack == 'Docker' }}
-      action: shell:run
-      input:
-        command: bash
-        args:
-          - -c
-          - |
-            echo "Creating temporary docker-compose.override.yml with port mapping..."
-            cat > docker-compose.override.yml <<EOF
-            version: '3'
-            services:
-              web:
-                ports:
-                  - "90:${{ parameters.extraFields.Port }}"
-            EOF
-
+    # # Step 3: Create override file for port mapping
+    # - id: override_ports
+    #   name: Create port override file
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: shell:run
+    #   input:
+    #     command: bash
+    #     args:
+    #       - -c
+    #       - |
+    #         echo "Creating temporary docker-compose.override.yml with port mapping..."
+    #         cat > docker-compose.override.yml <<EOF
+    #         version: '3'
+    #         services:
+    #           web:
+    #             ports:
+    #               - "90:${{ parameters.extraFields.Port }}"
+    #         EOF
+###################################################################################################################################################################################
 
     # - id: build_docker
     #   name: Build and run docker containers
@@ -503,27 +504,27 @@ spec:
     #       - "up"
     #       - "--build"
     #       - "-d"
-
-    - id: check-files
-      name: Check for docker-compose file
-      if: ${{ parameters.stack == 'Docker' }}
-      action: shell:run
-      input:
-        cwd: ${{ steps.fetch-template.output.path }}
-        command: bash
-        args:
-          - -c
-          - |
-            echo "📁 Current directory: $(pwd)"
-            echo "🔍 Listing files:"
-            ls -la
-            if [ -f docker-compose.yml ]; then
-              echo "✅ Found docker-compose.yml"
-            else
-              echo "❌ docker-compose.yml not found!"
-              exit 1
-            fi
-          
+######################################################################################################################################################
+    # - id: check-files
+    #   name: Check for docker-compose file
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: shell:run
+    #   input:
+    #     cwd: ${{ steps.fetch-template.output.path }}
+    #     command: bash
+    #     args:
+    #       - -c
+    #       - |
+    #         echo "📁 Current directory: $(pwd)"
+    #         echo "🔍 Listing files:"
+    #         ls -la
+    #         if [ -f docker-compose.yml ]; then
+    #           echo "✅ Found docker-compose.yml"
+    #         else
+    #           echo "❌ docker-compose.yml not found!"
+    #           exit 1
+    #         fi
+       ##################################################################################11-14-2025#######################   
 
     # - id: build_docker
     #   name: Build Docker Image4444444

@@ -99,11 +99,12 @@ spec:
         command: sh
         args:
           - "-c"
-          - >
-            CLEAN_URL=$(echo "${{ parameters.Github_URL }}" | tr -d '\n' | tr -d '\r' | xargs) &&
-            mkdir -p "/opt/user-repos/${{ parameters.DeploymentName }}" &&
-            git clone "$CLEAN_URL" "/opt/user-repos/${{ parameters.DeploymentName }}"
-        
+          - |
+            CLEAN_URL=$(echo "${{ parameters.Github_URL }}" | tr -d '\n' | tr -d '\r')
+            TARGET_DIR="/home/msis/projects/${{ parameters.DeploymentName }}"
+            rm -rf "$TARGET_DIR"
+            mkdir -p "$TARGET_DIR"
+            git clone "$CLEAN_URL" "$TARGET_DIR"
           # - "-c"
           # - |
           #   CLEAN_URL=$(echo "${{ parameters.Github_URL }}" | tr -d '\n' | tr -d '\r' | xargs)
@@ -121,12 +122,14 @@ spec:
         args:
           - "-c"
           - |
-            if [ ! -f /opt/user-repos/temp_folder/docker-compose.yml ]; then
-              echo "docker-compose.yml not found!"
+            COMPOSE="/home/msis/projects/docker-compose.yml"
+            if [ ! -f "$COMPOSE" ]; then
+              echo "❌ docker-compose.yml not found in repo!"
               exit 1
             fi
-            docker-compose -f /opt/user-repos/temp_folder/docker-compose.yml config
-  
+            docker-compose -f "$COMPOSE" config
+          
+            
     # Step 3: Deploy docker-compose (detached)
     - id: deploy-compose
       name: Deploy Docker Compose
@@ -136,9 +139,8 @@ spec:
         args:
           - "-c"
           - |
-            cd /opt/user-repos/temp_folder
-            docker-compose up --build -d || \
-            (echo "Deployment failed, showing logs..." && docker-compose logs)
+            cd "/home/msis/projects/${{ parameters.DeploymentName }}"
+            docker-compose up -d || (echo "❌ Deployment failed"; docker-compose logs)
   
     # Step 4: List running containers
     - id: show-containers

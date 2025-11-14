@@ -110,7 +110,8 @@ spec:
       input:
         cwd: ./repo
         command: docker-compose
-        args: ["-f", "${{ parameters.extraFields.Dockerfile }}", "up", "--build", "--no-ansi", "-d"]
+        args: ["-f", "${{ parameters.extraFields.Dockerfile }}", "up", "--build"]
+        #, "--no-ansi", "-d"]
 
       # input:
       #   url: ${{ parameters.Github_URL }}

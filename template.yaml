@@ -104,7 +104,7 @@ spec:
     - id: fetch-template
       name: Fetch template files
       if: ${{ parameters.stack == 'Docker' }}
-      action: fetch:plain
+      action: fetch:template
       input:
         url: ${{ parameters.Github_URL }}
         targetPath: .

@@ -92,8 +92,8 @@ spec:
           
   steps:
 
-    - id: fetch-repo
-      name: Clone GitHub Repository
+    - id: fetch-template
+      name: Fetch template files
       action: fetch:plain
       input:
         url: ${{ parameters.Github_URL }}
@@ -109,7 +109,7 @@ spec:
       name: Run Docker Compose
       action: shell:run
       input:
-        cwd: ${{ steps.fetch-repo.output.path }}
+        cwd: ${{ steps.clone.output.path }}
         command: /usr/local/bin/docker-compose
         args:
           - "-f"

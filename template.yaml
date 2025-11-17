@@ -59,7 +59,7 @@ spec:
             - properties:
                 stack:
                   const: Baremetal
-                extraFields: hosts
+                extraFields:
                   type: object
                   properties:
                     PlaybookPath:

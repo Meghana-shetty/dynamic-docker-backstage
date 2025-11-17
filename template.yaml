@@ -943,5 +943,5 @@ spec:
 
       - title: "Open Website2"
         if: ${{ parameters.stack == 'Docker' }}
-        url: "${{ steps.runDockerComposeAction.outputs.webUrl }}"
+        url: ${{ steps.runDockerComposeAction.outputs.webUrl }}
         icon: "website"

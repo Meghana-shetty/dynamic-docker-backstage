@@ -112,17 +112,17 @@ spec:
       #   workDir: .
         #composeFile: docker-compose.yml
 
-    - id: run-docker-compose
-      name: Run Docker Compose
-      action: shell:run
-      input:
-        cwd: ${{ steps.clone.output.path }}
-        command: /usr/local/bin/docker-compose
-        args:
-          - "-f"
-          - "./workspace/docker-compose.yml"
-          - "up"
-          - "-d"
+    # - id: run-docker-compose
+    #   name: Run Docker Compose
+    #   action: shell:run
+    #   input:
+    #     cwd: ${{ steps.clone.output.path }}
+    #     command: /usr/local/bin/docker-compose
+    #     args:
+    #       - "-f"
+    #       - "./workspace/docker-compose.yml"
+    #       - "up"
+    #       - "-d"
 
           
     # - id: fetch-repo

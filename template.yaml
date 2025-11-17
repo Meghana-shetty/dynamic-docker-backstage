@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: Github-pages-deploy-from-github
   title: Backstage Driven Internal Developer Platform
-  description: Automates website deployment using Docker containers or GitHub Pages hosting.
+  description: Automates website deployment.
 spec:
   owner: user:guest
   type: service

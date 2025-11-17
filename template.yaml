@@ -100,13 +100,13 @@ spec:
         url: ${{ parameters.Github_URL }}
         targetPath: ./
 
-    - id: remove-network
-      name: Remove unused network
-      if: ${{ parameters.stack == 'Docker' }}
-      action: shell:run
-      input:
-        command: docker
-        args: ["network", "prune"]
+    # - id: remove-network
+    #   name: Remove unused network
+    #   if: ${{ parameters.stack == 'Docker' }}
+    #   action: shell:run
+    #   input:
+    #     command: docker
+    #     args: ["network", "prune"]
 
     - id: deploy-compose
       name: Deploy using Docker Compose

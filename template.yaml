@@ -929,7 +929,7 @@ spec:
 
   output:
     links:
-      - title: "View on GitHub Pages"
+      - title: "View on GitHub Pages2"
         #if: "${{ parameters.deploy_method == 'github pages' }}"
         if: ${{ parameters.stack == 'Github pages' }}
         url: "https://${{ parameters.Github_URL | replace('https://github.com/', '') | replace('.git', '') | replace('/', '.github.io/') }}/"

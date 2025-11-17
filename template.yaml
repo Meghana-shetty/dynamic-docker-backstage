@@ -956,5 +956,5 @@ spec:
 
       - title: "Open Website2"
         if: ${{ parameters.stack == 'Docker' }}
-        url: "${{ steps.deploy-compose.outputs.webUrl }}"
+        url: "http://localhost"
         icon: "website"

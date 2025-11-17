@@ -59,7 +59,7 @@ spec:
             - properties:
                 stack:
                   const: Baremetal
-                extraFields:
+                extraFields:hosts
                   type: object
                   properties:
                     PlaybookPath:
@@ -101,6 +101,6 @@ spec:
   output:
     links:
       - title: "Open Website"
-        if: ${{ parameters.stack == 'Docker' }}
-        url: "http://localhost:89"
+        if: ${{ parameters.stack == 'Baremetal' }}
+        url: "172.18.181.50"
         icon: "website"

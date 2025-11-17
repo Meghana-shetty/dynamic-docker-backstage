@@ -936,12 +936,12 @@ spec:
         #url: ${{ steps.github-pages.output.pageUrl }}
         icon: "website"
 
-      - title: "Open Website"
-        if: ${{ parameters.stack == 'Docker' }}
-        url: "http://localhost:89"
-        icon: "website"
+      # - title: "Open Website"
+      #   if: ${{ parameters.stack == 'Docker' }}
+      #   url: "http://localhost:89"
+      #   icon: "website"
 
-      - title: "Open Website"
+      - title: "Open Website2"
         if: ${{ parameters.stack == 'Docker' }}
         url: ${{ steps.runDockerComposeAction.outputs.webUrl }}
         icon: "website"

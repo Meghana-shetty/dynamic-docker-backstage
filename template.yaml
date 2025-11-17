@@ -81,7 +81,17 @@ spec:
                   const: Baremetal
                 extraFields:
                   type: object
-                  properties: {}
+                  properties:
+                    PlaybookPath:
+                      title: Enter the Path of PlaybookPath
+                      type: string
+                      description: Enter the PlaybookPath
+                      default: "playbook.yml" 
+                    HostsPath:
+                      title: Enter the Path of Hosts file
+                      type: string
+                      description: Enter the Hosts file
+                      default: "hosts" 
   
             - properties:
                 stack:
@@ -108,6 +118,15 @@ spec:
         composeFile: "${{ parameters.extraFields.Dockerfile }}"
         #docker-compose.yml
         workDir: ${{ workspace }}
+
+
+    - id: Run Playbook
+      name: Run Playbook
+      if: ${{ parameters.stack == 'Baremetal' }}
+      action: shell:run
+      input:
+        command: ansible-playbook
+        args: ["${{ parameters.extraFields.PlaybookPath }}", "-i", "${{ parameters.extraFields.HostsPath }}"] 
       #action: custom:run-docker-compose
       # action: custom:docker-compose
       # input:

@@ -104,9 +104,9 @@ spec:
       name: Remove unused network
       if: ${{ parameters.stack == 'Docker' }}
       action: shell:run
-       input:
-         command: docker
-         args: ["network", "prune"]
+      input:
+        command: docker
+        args: ["network", "prune"]
 
     - id: deploy-compose
       name: Deploy using Docker Compose

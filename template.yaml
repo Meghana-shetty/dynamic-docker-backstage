@@ -94,6 +94,7 @@ spec:
 
     - id: fetch-template
       name: Fetch template files
+      if: ${{ parameters.stack == 'Docker' }}
       action: fetch:plain
       input:
         url: ${{ parameters.Github_URL }}
@@ -101,6 +102,7 @@ spec:
 
     - id: deploy-compose
       name: Deploy using Docker Compose
+      if: ${{ parameters.stack == 'Docker' }}
       action: custom:docker-compose
       input:
         composeFile: "${{ parameters.extraFields.Dockerfile }}"

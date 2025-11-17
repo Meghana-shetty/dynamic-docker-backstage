@@ -936,15 +936,15 @@ spec:
         #url: ${{ steps.github-pages.output.pageUrl }}
         icon: "website"
 
-      - title: "Open Website"
+      - title: "Open Website3"
         if: ${{ parameters.stack == 'Docker' }}
         url: "${{ steps.deploy-compose.outputs.webUrl }}"
         icon: "website"
 
-      # - title: "Open Website"
-      #   if: ${{ parameters.stack == 'Docker' }}
-      #   url: "http://localhost:89"
-      #   icon: "website"
+      - title: "Open Website"
+        if: ${{ parameters.stack == 'Docker' }}
+        url: "http://localhost:89"
+        icon: "website"
 
       - title: "Open Website2"
         if: ${{ parameters.stack == 'Docker' }}

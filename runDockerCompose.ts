@@ -56,37 +56,104 @@ export function createDockerComposeAction() {
 
       // === Step 1: Parse docker-compose.yml to get services ===
       let serviceNames: string[] = [];
+      let composeDoc: any = {};
       try {
         const yaml = await import('js-yaml');
         const composeContent = fs.readFileSync(composePath, 'utf8');
-        const doc = yaml.load(composeContent) as any;
-        if (doc.services) {
-          serviceNames = Object.keys(doc.services);
+        composeDoc = yaml.load(composeContent) as any;
+        if (composeDoc.services) {
+          serviceNames = Object.keys(composeDoc.services);
           ctx.logger.info(`Detected services: ${serviceNames.join(', ')}`);
         }
       } catch (err) {
         ctx.logger.warn(`Failed to parse compose file: ${err}`);
       }
 
-      // === Step 2: Remove existing containers for those services ===
-      for (const service of serviceNames) {
-        await new Promise<void>((resolve) => {
-          const rmProc = spawn('/usr/bin/bash', [
-            '-c',
-            `docker ps -a --filter "name=${service}" --format "{{.Names}}" | xargs -r docker rm -f`
-          ]);
+      // =====================================================
+      // === Step 2: REMOVE CONTAINERS BY NAME AND BY PORT ===
+      // =====================================================
 
-          rmProc.stdout.on('data', data => ctx.logger.info(`DOCKER OUT: ${data.toString()}`));
-          rmProc.stderr.on('data', data => ctx.logger.warn(`DOCKER WARN: ${data.toString()}`));
-          rmProc.on('close', () => {
-            ctx.logger.info(`Removed any existing containers matching: ${service}`);
-            resolve();
-          });
+      const composeDirName = path.basename(cwd);
+
+      interface SvcInfo {
+        service: string;
+        containerName: string;
+        expectedHostPorts: string[];
+      }
+
+      const svcInfos: SvcInfo[] = [];
+
+      for (const service of serviceNames) {
+        const def = composeDoc.services[service];
+
+        const containerName = def.container_name
+          ? def.container_name
+          : `${composeDirName}_${service}_1`;
+
+        const expectedHostPorts: string[] = [];
+        if (def.ports) {
+          for (const p of def.ports) {
+            const parts = p.toString().split(':');
+            if (parts.length >= 2) {
+              expectedHostPorts.push(parts[0]);
+            }
+          }
+        }
+
+        svcInfos.push({ service, containerName, expectedHostPorts });
+      }
+
+      ctx.logger.info(`Service cleanup info: ${JSON.stringify(svcInfos)}`);
+
+      async function removeContainer(name: string) {
+        await new Promise<void>((resolve) => {
+          const cmd = `docker ps -a --filter "name=^${name}$" --format "{{.Names}}" | xargs -r docker rm -f`;
+          const rmProc = spawn('/usr/bin/bash', ['-c', cmd]);
+
+          rmProc.stdout.on('data', d => ctx.logger.info(`[RM] ${d.toString()}`));
+          rmProc.stderr.on('data', d => ctx.logger.warn(`[RM ERR] ${d.toString()}`));
+          rmProc.on('close', () => resolve());
         });
       }
 
-      ctx.logger.info('Starting Docker Compose...');
+      // Remove containers by name
+      for (const svc of svcInfos) {
+        ctx.logger.info(`Removing container by name: ${svc.containerName}`);
+        await removeContainer(svc.containerName);
+      }
+
+      // Remove containers blocking ports
+      for (const svc of svcInfos) {
+        for (const port of svc.expectedHostPorts) {
+          ctx.logger.info(`Checking port conflict for host port: ${port}`);
+
+          const conflictingContainers = await new Promise<string[]>((resolve) => {
+            const cmd = `docker ps --format "{{.Names}}:::{{.Ports}}"`;
+            const proc = spawn('/usr/bin/bash', ['-c', cmd]);
+
+            let out = '';
+            proc.stdout.on('data', d => (out += d.toString()));
+            proc.on('close', () => {
+              const results: string[] = [];
+              out.trim().split('\n').forEach(line => {
+                const [name, ports] = line.split(':::');
+                if (ports && ports.includes(`${port}->`)) {
+                  results.push(name);
+                }
+              });
+              resolve(results);
+            });
+          });
+
+          for (const container of conflictingContainers) {
+            ctx.logger.warn(`Host port ${port} is in use by ${container}. Removing...`);
+            await removeContainer(container);
+          }
+        }
+      }
+
       // === Step 3: Run docker compose up -d --build ===
+      ctx.logger.info('Starting Docker Compose...');
       await new Promise<void>((resolve, reject) => {
         const upProc = spawn(
           '/usr/bin/docker',
@@ -147,19 +214,19 @@ export function createDockerComposeAction() {
 
       ctx.logger.info(`Exposed ports: ${JSON.stringify(ports)}`);
 
-      // === Step 5: Pick the first web service URL dynamically ===
+      // === Step 5: Pick first web URL
       let webUrl = '';
       for (const [service, mappings] of Object.entries(ports)) {
         if (mappings.length > 0) {
           webUrl = `http://localhost:${mappings[0].hostPort}`;
-          break; // pick the first service with a port
+          break;
         }
       }
 
       ctx.output('ports', ports);
-      ctx.logger.info(`Web URL detected: ${webUrl}`);
       ctx.output('webUrl', webUrl);
-      //ctx.output('webUrl', webUrl);
+      ctx.logger.info(`Application available at: ${webUrl}`);
+
       return { webUrl, ports };
     },
   });
@@ -177,4 +244,3 @@ export const dockerComposeModule = createBackendModule({
     });
   },
 });
-

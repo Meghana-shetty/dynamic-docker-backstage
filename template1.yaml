@@ -1,0 +1,209 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: Github-pages-deploy-from-github
+  title: Backstage Driven Internal Developer Platform - Dynamic
+  description: Automates dynamic website deployment using Docker containers and Ansible.
+spec:
+  owner: user:guest
+  type: service
+
+  
+  parameters:
+    - title: GitHub Repository URL
+      required: 
+        - Github_URL
+        #- Dockerfile
+        #- Port
+      properties:
+        Github_URL:
+          title: Enter you Github URL
+          type: string
+          description: Enter the github URL where your code exists
+          ui:autofocus: true
+
+    - title: Select where you want to deploy your code
+      required:
+        - stack
+      properties:
+        stack:
+          title: Select from below list
+          type: string
+          enum:
+            - Docker
+            - Baremetal
+  
+    - title: Enter below details
+      dependencies:
+        stack:
+          oneOf:
+            - properties:
+                stack:
+                  const: Docker
+                extraFields:          # 👈 wrap everything else inside a schema key
+                  title: Enter the details
+                  type: object
+                  properties:
+                    Dockerfile:
+                      title: Enter the Path of Docker-Compose file3
+                      type: string
+                      description: Enter the Dockercompose file path (e.g. build/docker-compose.yml or enter docker-compose.yml if it is in root) 
+                      default: "docker-compose.yml" 
+                       
+            - properties:
+                stack:
+                  const: Baremetal
+                extraFields:
+                  type: object
+                  properties:
+                    PlaybookPath:
+                      title: Enter the Path of PlaybookPath
+                      type: string
+                      description: Enter the PlaybookPath
+                      default: "playbook.yml" 
+                    HostsPath:
+                      title: Enter the Path of Hosts file
+                      type: string
+                      description: Enter the Hosts file
+                      default: "hosts" 
+          
+  steps:
+
+    - id: fetch-template
+      name: Fetch template files
+      action: fetch:plain
+      input:
+        url: ${{ parameters.Github_URL }}
+        targetPath: ./
+
+    - id: deploy-compose
+      name: Deploy using Docker Compose
+      if: ${{ parameters.stack == 'Docker' }}
+      action: custom:docker-compose
+      input:
+        composeFile: "${{ parameters.extraFields.Dockerfile }}"
+        workDir: ${{ workspace }}
+
+    - id: Run Playbook
+      name: Run Playbook
+      if: ${{ parameters.stack == 'Baremetal' }}
+      action: shell:run
+      input:
+        command: ansible-playbook
+        args: ["${{ parameters.extraFields.PlaybookPath }}", "-i", "${{ parameters.extraFields.HostsPath }}"] 
+
+  output:
+    links:
+      - title: "Open Website deployed from Ansible"
+        if: ${{ parameters.stack == 'Baremetal' }}
+        url: "http://172.18.181.50"
+        icon: "website"
+
+
+
+# apiVersion: scaffolder.backstage.io/v1beta3
+# kind: Template
+# metadata:
+#   name: Github-pages-deploy-from-github
+#   title: Backstage Driven Internal Developer Platform - Dynamic
+#   description: Automates dynamic website deployment using Docker containers and Ansible.
+# spec:
+#   owner: user:guest
+#   type: service
+
+  
+#   parameters:
+#     - title: GitHub Repository URL
+#       required: 
+#         - Github_URL
+#         #- Dockerfile
+#         #- Port
+#       properties:
+#         Github_URL:
+#           title: Enter you Github URL
+#           type: string
+#           description: Enter the github URL where your code exists
+#           ui:autofocus: true
+
+#     - title: Select where you want to deploy your code
+#       required:
+#         - stack
+#       properties:
+#         stack:
+#           title: Select from below list
+#           type: string
+#           enum:
+#             - Docker
+#             - Baremetal
+  
+#     - title: Enter below details
+#       dependencies:
+#         stack:
+#           oneOf:
+#             - properties:
+#                 stack:
+#                   const: Docker
+#                 extraFields:          # 👈 wrap everything else inside a schema key
+#                   title: Enter the details
+#                   type: object
+#                   properties:
+#                     Dockerfile:
+#                       title: Enter the Path of Docker-Compose file3
+#                       type: string
+#                       description: Enter the Dockercompose file path (e.g. build/docker-compose.yml or enter docker-compose.yml if it is in root) 
+#                       default: "docker-compose.yml" 
+#                     Port:
+#                       title: Enter the Port number
+#                       type: integer
+#                       minimum: 1
+#                       maximum: 65535
+#                       description: Enter the Port number of your application (e.g. 80/3000/5000)
+                       
+#             - properties:
+#                 stack:
+#                   const: Baremetal
+#                 extraFields:
+#                   type: object
+#                   properties:
+#                     PlaybookPath:
+#                       title: Enter the Path of PlaybookPath
+#                       type: string
+#                       description: Enter the PlaybookPath
+#                       default: "playbook.yml" 
+#                     HostsPath:
+#                       title: Enter the Path of Hosts file
+#                       type: string
+#                       description: Enter the Hosts file
+#                       default: "hosts" 
+          
+#   steps:
+
+#     - id: fetch-template
+#       name: Fetch template files
+#       action: fetch:plain
+#       input:
+#         url: ${{ parameters.Github_URL }}
+#         targetPath: ./
+
+#     - id: deploy-compose
+#       name: Deploy using Docker Compose
+#       if: ${{ parameters.stack == 'Docker' }}
+#       action: custom:docker-compose
+#       input:
+#         composeFile: "${{ parameters.extraFields.Dockerfile }}"
+#         workDir: ${{ workspace }}
+
+#     - id: Run Playbook
+#       name: Run Playbook
+#       if: ${{ parameters.stack == 'Baremetal' }}
+#       action: shell:run
+#       input:
+#         command: ansible-playbook
+#         args: ["${{ parameters.extraFields.PlaybookPath }}", "-i", "${{ parameters.extraFields.HostsPath }}"] 
+
+#   output:
+#     links:
+#       - title: "Open Website deployed from Ansible"
+#         #if: ${{ parameters.stack == 'Baremetal' }}
+#         url: "http://172.18.181.50"
+#         icon: "website"
